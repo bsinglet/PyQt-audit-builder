@@ -25,50 +25,17 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(QSize(640, 400))
         self.setWindowTitle("SQL Policy check builder")
 
-        self.descriptionLabel = QLabel(self)
-        self.descriptionLabel.setText('Description:')
-        self.descriptionLine = QLineEdit(self)
-
-        self.descriptionLine.move(SECOND_COLUMN_X, 20)
-        self.descriptionLine.resize(LINE_EDIT_LENGTH, LINE_EDIT_HEIGHT)
-        self.descriptionLabel.move(20, 20)
-        self.descriptionLabel.adjustSize()
-
-        self.infoLabel = QLabel(self)
-        self.infoLabel.setText('Info:')
-        self.infoLine = QLineEdit(self)
-
-        self.infoLine.move(SECOND_COLUMN_X, 50)
-        self.infoLine.resize(LINE_EDIT_LENGTH, LINE_EDIT_HEIGHT)
-        self.infoLabel.move(20, 50)
-        self.infoLabel.adjustSize()
-
-        self.solutionLabel = QLabel(self)
-        self.solutionLabel.setText('Solution:')
-        self.solutionLine = QLineEdit(self)
-
-        self.solutionLine.move(SECOND_COLUMN_X, 80)
-        self.solutionLine.resize(LINE_EDIT_LENGTH, LINE_EDIT_HEIGHT)
-        self.solutionLabel.move(20, 80)
-        self.solutionLabel.adjustSize()
-
-        self.cmdLabel = QLabel(self)
-        self.cmdLabel.setText('cmd:')
-        self.cmdLine = QLineEdit(self)
-
-        self.cmdLine.move(SECOND_COLUMN_X, 110)
-        self.cmdLine.resize(LINE_EDIT_LENGTH, LINE_EDIT_HEIGHT)
-        self.cmdLabel.move(20, 110)
-        self.cmdLabel.adjustSize()
-
-        self.expectLabel = QLabel(self)
-        self.expectLabel.setText('expect:')
-        self.expectLine = QLineEdit(self)
-
-        self.expectLine.move(SECOND_COLUMN_X, 140)
-        self.expectLine.resize(LINE_EDIT_LENGTH, LINE_EDIT_HEIGHT)
-        self.expectLabel.move(20, 140)
-        self.expectLabel.adjustSize()
+        self.components = ['description', 'info', 'solution', 'cmd', 'expect']
+        self.my_objects = dict()
+        for index, each_key in enumerate(self.components):
+            self.my_objects[each_key] = list()
+            self.my_objects[each_key].append(QLabel(self))
+            self.my_objects[each_key][0].setText(each_key)
+            self.my_objects[each_key].append(QLineEdit(self))
+            self.my_objects[each_key][1].move(SECOND_COLUMN_X, 20 + (index*30))
+            self.my_objects[each_key][1].resize(LINE_EDIT_LENGTH, LINE_EDIT_HEIGHT)
+            self.my_objects[each_key][0].move(20, 20 + (index*30))
+            self.my_objects[each_key][0].adjustSize()
 
         ok_button = QPushButton('OK', self)
         ok_button.clicked.connect(self.onClick)
@@ -85,13 +52,18 @@ class MainWindow(QMainWindow):
 
 
     def onClick(self):
+        description = self.my_objects['description'][1].text()
+        info = self.remove_double_quotes(self.my_objects['info'][1].text())
+        solution = self.remove_double_quotes(self.my_objects['solution'][1].text())
+        cmd = self.my_objects['cmd'][1].text()
+        expect = self.my_objects['expect'][1].text()
         message = f'<custom_item>\n' \
                   f'  type        : CMD_EXEC\n' \
-                  f'  description : "{self.descriptionLine.text()}"\n' \
-                  f'  info        : "{self.remove_double_quotes(self.infoLine.text())}"\n' \
-                  f'  solution    : "{self.remove_double_quotes(self.solutionLine.text())}"\n' \
-                  f'  cmd         : "{self.cmdLine.text()}"\n' \
-                  f'  expect      : "{self.expectLine.text()}"\n' \
+                  f'  description : "{description}"\n' \
+                  f'  info        : "{info}"\n' \
+                  f'  solution    : "{solution}"\n' \
+                  f'  cmd         : "{cmd}"\n' \
+                  f'  expect      : "{expect}"\n' \
                   f'</custom_item>'
         print(message)
         self.checkOutputEdit.setPlainText(message)
